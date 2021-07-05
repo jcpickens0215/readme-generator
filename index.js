@@ -2,22 +2,16 @@
 const file = require("fs");
 const inquirer = require("inquirer");
 const moment = require("moment");
-const genMD = require("./utils/generateMarkdown.js");
-
-// inquirer stuff here
-//  Ask q's
-
-// Description
-// Installation
-// Usage
-// Testing
-// Contribution
-// Credits
-// License
+const genMD = require("./utils/generateMarkdown");
 
 inquirer.prompt(
-
     [
+        {
+            type: 'input',
+            message: `What is the name of this project?
+            PROJECT NAME: `,
+            name: 'projName',
+        },
         {
             type: 'input',
             message: `Please provide a short description of your project
@@ -67,7 +61,7 @@ inquirer.prompt(
 
         // Gen filename
         const todaysDate = moment().format("YYYY-MM-DD")
-        const fileName = /* project name + "_" +*/ todaysDate + ".md";
+        const fileName = `${response.projName}_${todaysDate}.md`;
 
         // Save that file!
         file.writeFile( fileName, buildREADMEString, (err) => {
