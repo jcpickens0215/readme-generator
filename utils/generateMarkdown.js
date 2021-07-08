@@ -1,19 +1,54 @@
+// Holds HREFs to all the available licenses
+const license_hrefs = {
+  unlicense: 'https://unlicense.org/',
+  boost: 'https://www.boost.org/users/license.html',
+  mit: 'https://mit-license.org/',
+  apache_2: 'https://www.apache.org/licenses/LICENSE-2.0.html',
+  mpl2: 'https://www.mozilla.org/en-US/MPL/2.0/',
+  gpl3: 'https://www.gnu.org/licenses/gpl-3.0.en.html',
+};
+
+// Returns the HREF to a license based off it's string return name
+function getLicenseHREF(license) {
+
+  switch(license) {
+
+    case 'Public Domain (Unlicense)':
+      return license_hrefs.unlicense;
+
+    case 'Boost Software License 1.0':
+      return license_hrefs.boost;
+
+    case 'MIT License':
+      return license_hrefs.mit;
+
+    case 'Apache License 2.0':
+      return license_hrefs.apache_2;
+
+    case 'Mozilla Public License 2.0':
+      return license_hrefs.mpl2;
+
+    case 'GNU General Public License v3':
+      return license_hrefs.gpl3;
+
+    default:
+      return '#';
+  }
+}
+
 // TODO: Create a function that returns a license badge based on which license is passed in
 // If there is no license, return an empty string
 function renderLicenseBadge(license) {
   return '\n';
 }
 
-// TODO: Create a function that returns the license link
-// If there is no license, return an empty string
-function renderLicenseLink(license) {
-  return '\n';
-}
-
 // TODO: Create a function that returns the license section of README
 // If there is no license, return an empty string
-function renderLicenseSection(license) {
-  return '\n';
+function renderLicenseSection(license, year, yourName) {
+  return `## License
+Licensed under the ${buildLink(false, license, getLicenseHREF(license))},
+${license == 'Public Domain (Unlicense)' ? '' : 'copyright ' + year + ' by ' + yourName}
+`;
 }
 
 // Creates all types of links! TOC, Images, regular hyperlinks.
@@ -22,16 +57,13 @@ function renderLicenseSection(license) {
 //    isImage - Is this link an image?
 //    alt_display - What is the alt text or display text?
 //    href - Where does this link pointg to?
-function buildLink(isLI, isImage, alt_display, href) {
+function buildLink(isLI, alt_display, href) {
 
   // Create a blank string
   let returnString = '';
 
   // If the link is a list item, make it one
   if (isLI) returnString += '- ';
-
-  // If the link is an image, make it one
-  if (isImage) returnString += '!';
 
   // Set the internal information
   returnString += `[${alt_display}](${href})`;
@@ -61,41 +93,39 @@ function renderTOCandSections(data) {
 
   // Main sections
   if (data.installation) {
-    tocContainer += buildLink(true, false, 'Installation', '#installation') + '\n';
+    tocContainer += buildLink(true, 'Installation', '#installation') + '\n';
     sectionsContainer += `## Installation\n${data.installation}\n`;
   }
 
   if (data.usage) {
-    tocContainer += buildLink(true, false, 'Usage', '#usage') + '\n';
+    tocContainer += buildLink(true, 'Usage', '#usage') + '\n';
     sectionsContainer += `## Usage\n${data.usage}\n`;
   }
  
   if (data.testing) {
-    tocContainer += buildLink(true, false, 'Testing', '#testing') + '\n';
+    tocContainer += buildLink(true, 'Testing', '#testing') + '\n';
     sectionsContainer += `## Testing\n${data.testing}\n`;
   }
   
   if (data.contribution) {
-    tocContainer += buildLink(true, false, 'Contribution', '#contribution') + '\n';
+    tocContainer += buildLink(true, 'Contribution', '#contribution') + '\n';
     sectionsContainer += `## Contribution\n${data.contribution}\n`;
   }
   
   if (data.credits) {
-    tocContainer += buildLink(true, false, 'Credits', '#credits') + '\n';
-    sectionsContainer += `## Credits\n${data.credits}\n`;
+    tocContainer += buildLink(true, 'Credits', '#credits') + '\n';
+    sectionsContainer += `## Credits\n${data.credits}`;
   }
 
   // Return the main portion of the README
   return descriptionContainer + tocContainer + sectionsContainer;
 }
 
-function generateMarkdown(data) {
+function generateMarkdown(data, year) {
   return `# ${data.projName}
 ${renderLicenseBadge(data) /* Add the badge */}
-${renderLicenseLink(data) /* Make it a link */}
 ${renderTOCandSections(data) /* Add the README sections */}
-${renderLicenseSection(data.license) /* Add the license section */}
-`;
+${renderLicenseSection(data.license, year, data.yourName) /* Add the license section */}`;
 }
 
 module.exports = {
