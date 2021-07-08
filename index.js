@@ -4,6 +4,9 @@ const inquirer = require("inquirer");
 const moment = require("moment");
 const genMD = require("./utils/generateMarkdown");
 
+const link = 'https://drive.google.com/file/d/1Q2ER4YfVRvHcJAGRfT61IwxsfwKxgj2l/view?usp=sharing';
+
+// Get section data from the user
 inquirer.prompt(
     [
         {
@@ -44,12 +47,6 @@ CONTRIBUTION: `,
         },
         {
             type: 'input',
-            name: 'credits',
-            message: `Who is responsible for creation/development of this project?
-CREDITS: `,
-        },
-        {
-            type: 'input',
             name: 'githubUsername',
             message: `What is your GitHub username? This will be used in a 'contact me' section
 USERNAME: `,
@@ -79,18 +76,16 @@ CHOOSE A LICENSE: `,
             message: `What is your first and last name? This will be used in the license copyright section if applicable
 YOUR NAME: `,
         },
-    ] ).then((response) => {
+    ] ).then((response) => { // Operate on the data received
 
-        const date = moment();
-        const year = date.format("YYYY");
-        const todaysDate = date.format("YYYY-MM-DD");
+        // Get the current year (for copyright)
+        const year = moment().format("YYYY");
 
-        console.log(response.license);
         //  convert responses into markdown
         const buildREADMEString = genMD.generateMarkdown(response, year);
 
         // Gen filename
-        const fileName = `${response.projName}_${todaysDate}.md`;
+        const fileName = `${response.projName}_README.md`;
 
         // Save that file!
         file.writeFile( fileName, buildREADMEString, (err) => {

@@ -36,25 +36,51 @@ function getLicenseHREF(license) {
   }
 }
 
-// TODO: Create a function that returns a license badge based on which license is passed in
-// If there is no license, return an empty string
+// This function returns an image link determined by the selected license
 function renderLicenseBadge(license) {
-  return '\n';
+
+  switch(license) {
+
+    case 'Public Domain (Unlicense)':
+      return '!' + buildLink(false, 'Unlicense', 'https://img.shields.io/badge/License-Unlicense-brightgreen');
+
+    case 'Boost Software License 1.0':
+      return '!' + buildLink(false, 'Boost Software License 1.0', 'https://img.shields.io/badge/License-Boost%201.0-brightgreen');
+
+    case 'MIT License':
+      return '!' + buildLink(false, 'MIT License', 'https://img.shields.io/badge/License-MIT-brightgreen');
+
+    case 'Apache License 2.0':
+      return '!' + buildLink(false, 'Apache License 2.0', 'https://img.shields.io/badge/License-Apache%202.0-brightgreen');
+
+    case 'Mozilla Public License 2.0':
+      return '!' + buildLink(false, 'Mozilla Public License 2.0', 'https://img.shields.io/badge/License-MPL%202.0-brightgreen');
+
+    case 'GNU General Public License v3':
+      return '!' + buildLink(false, 'GNU General Public License v3', 'https://img.shields.io/badge/License-gpl%20v3-brightgreen');
+
+    // If there is no license, return an empty string
+    default:
+      return '';
+  }
 }
 
-// TODO: Create a function that returns the license section of README
-// If there is no license, return an empty string
+// Prints out the full license section, complete with copyright notice if not
+// in the Public Domain
 function renderLicenseSection(license, year, yourName) {
-  return `## License
-Licensed under the ${buildLink(false, license, getLicenseHREF(license))},
-${license == 'Public Domain (Unlicense)' ? '' : 'copyright ' + year + ' by ' + yourName}
-`;
+
+  // If there is no license, return an empty string
+  if (!license) return '';
+
+  return `## License\n
+Licensed under the ${buildLink(false, license, getLicenseHREF(license))}
+${license == 'Public Domain (Unlicense)' ? '' : ', copyright ' + year + ' by ' + yourName}\n____\n
+Badges provided by ${buildLink(false, 'Shields.io', 'https://shields.io/')}`;
 }
 
-// Creates all types of links! TOC, Images, regular hyperlinks.
+// Creates links! TOC and regular hyperlinks.
 // @params 
 //    isLI - Is this link a list item?
-//    isImage - Is this link an image?
 //    alt_display - What is the alt text or display text?
 //    href - Where does this link pointg to?
 function buildLink(isLI, alt_display, href) {
@@ -72,8 +98,7 @@ function buildLink(isLI, alt_display, href) {
   return returnString;
 }
 
-// TODO: Create a function that creates a table of contents, and
-// TODO: The bulk of the README
+// Renders out the main sections of the README
 function renderTOCandSections(data) {
 
   // Holds section text
@@ -83,38 +108,40 @@ function renderTOCandSections(data) {
   let tocContainer = '## Table of Contents\n';
 
   // Holds Description text separate
-  let descriptionContainer;
+  let descriptionContainer = '';
 
-    if (data.description) {
-      descriptionContainer = `## Description\n${data.description}\n`
-    } else {
-      descriptionContainer = '';
-    }
+  if (data.description) { // If the user supplied a description
+    descriptionContainer = `## Description\n${data.description}\n`;
+  }
 
   // Main sections
-  if (data.installation) {
+  if (data.installation) { // If the user supplied installation instructions
     tocContainer += buildLink(true, 'Installation', '#installation') + '\n';
     sectionsContainer += `## Installation\n${data.installation}\n`;
   }
 
-  if (data.usage) {
+  if (data.usage) { // If the user supplied a usage instructions
     tocContainer += buildLink(true, 'Usage', '#usage') + '\n';
     sectionsContainer += `## Usage\n${data.usage}\n`;
   }
  
-  if (data.testing) {
+  if (data.testing) { // If the user supplied test commands
     tocContainer += buildLink(true, 'Testing', '#testing') + '\n';
     sectionsContainer += `## Testing\n${data.testing}\n`;
   }
   
-  if (data.contribution) {
+  if (data.contribution) { // If the user supplied contribution guidelines
     tocContainer += buildLink(true, 'Contribution', '#contribution') + '\n';
     sectionsContainer += `## Contribution\n${data.contribution}\n`;
   }
   
-  if (data.credits) {
-    tocContainer += buildLink(true, 'Credits', '#credits') + '\n';
-    sectionsContainer += `## Credits\n${data.credits}`;
+  if (data.githubUsername) { // If the user supplied a GitHub username
+    tocContainer += buildLink(true, 'Questions', '#questions') + '\n';
+    sectionsContainer += `## Questions
+If you have any questions about this project, you can find me on GitHub as ${buildLink(false, data.githubUsername, 'https://github.com/' + data.githubUsername)}.\n\n`;
+    if (data.email) { // If the user supplied an e-mail address
+      sectionsContainer += `You can also send me an e-mail at ${data.email}`;
+    }
   }
 
   // Return the main portion of the README
@@ -123,7 +150,7 @@ function renderTOCandSections(data) {
 
 function generateMarkdown(data, year) {
   return `# ${data.projName}
-${renderLicenseBadge(data) /* Add the badge */}
+${renderLicenseBadge(data.license) /* Add the badge */}
 ${renderTOCandSections(data) /* Add the README sections */}
 ${renderLicenseSection(data.license, year, data.yourName) /* Add the license section */}`;
 }
